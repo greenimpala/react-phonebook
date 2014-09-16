@@ -1,0 +1,67 @@
+#!/bin/bash
+
+BUILD_DIR="build"
+MINIFY=0
+
+function clean {
+	rm -rf $BUILD_DIR
+	mkdir $BUILD_DIR
+}
+
+function fail {
+	echo "Failed building $0"
+	clean
+	exit 1
+}
+
+function build_scripts {
+	echo -n "Building scripts..."
+	build_script_cmd="browserify -t reactify"
+	if [ "$MINIFY" == "1" ]; then
+		build_script_cmd="$build_script_cmd -t uglifyify"
+	fi
+
+	build_script_cmd="$build_script_cmd -o $BUILD_DIR/index.js src/index.js"
+	eval $build_script_cmd
+
+	if [ "$?" != "0" ]; then
+		fail "scripts"
+	else
+		echo "done!"
+	fi
+}
+
+function build_css {
+	echo -n "Building CSS..."
+	build_css_command="./node_modules/.bin/lessc src/css/app.less $BUILD_DIR/app.css"
+
+	if [ "$MINIFY" == "1" ]; then
+		build_css_command="$build_css_command -x"
+	fi
+
+	eval $build_css_command
+
+	if [ "$?" != "0" ]; then
+		fail "CSS"
+	else
+		cp src/vendor/foundation/css/foundation.css $BUILD_DIR/foundation.css
+		echo "done!"
+	fi
+}
+
+function main {
+	if [ "$1" == "--min" ]; then
+		MINIFY=1
+		echo "Using minification"
+	else
+		echo "Not minifying"
+	fi
+
+	clean
+	build_scripts $@
+	build_css $@
+
+	echo "Finished okay!"
+}
+
+main $@
