@@ -22,8 +22,14 @@ Open `index.html` in a browser using a web server.
 
 ### Options
 
-Use `--min` when building to use an uglify transform.
+`--min` when building to use an uglify transform.
 
 ```
 ./bin/build --min
+```
+
+`--watch` when building to watch src files and rebuild automatically on change.
+
+```
+./bin/build --watch -v
 ```

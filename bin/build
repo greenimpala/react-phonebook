@@ -2,6 +2,7 @@
 
 BUILD_DIR="build"
 MINIFY=0
+WATCH=0
 
 function clean {
 	rm -rf $BUILD_DIR
@@ -15,19 +16,27 @@ function fail {
 }
 
 function build_scripts {
-	echo -n "Building scripts..."
-	build_script_cmd="browserify -t reactify"
-	if [ "$MINIFY" == "1" ]; then
-		build_script_cmd="$build_script_cmd -t uglifyify"
+	if [ "$WATCH" == "1" ]; then
+		echo "Watching files..."
+		proc="watchify"
+	else
+		echo -n "Building scripts..."
+		proc="browserify"
 	fi
 
-	build_script_cmd="$build_script_cmd -o $BUILD_DIR/index.js src/index.js"
-	eval $build_script_cmd
+	if [ "$MINIFY" == "1" ]; then
+		proc_extra_args="-t uglifyify"
+	fi
 
-	if [ "$?" != "0" ]; then
-		fail "scripts"
-	else
-		echo "done!"
+	proc_script="$proc -t reactify $proc_extra_args -o $BUILD_DIR/index.js src/index.js $@"
+	eval $proc_script
+
+	if [ "$WATCH" == "0" ]; then
+		if [ "$?" != "0" ]; then
+			fail "scripts"
+		else
+			echo "done!"
+		fi
 	fi
 }
 
@@ -57,9 +66,15 @@ function main {
 		echo "Not minifying"
 	fi
 
+	if [ "$1" == "--watch" ]; then
+		WATCH=1
+	fi
+
+	extra_args="${*:2}"
+
 	clean
-	build_scripts $@
-	build_css $@
+	build_css $extra_args
+	build_scripts $extra_args
 
 	echo "Finished okay!"
 }
