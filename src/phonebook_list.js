@@ -18,13 +18,14 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    entries = this.state.searchResultEntries || this.props.phoneBookEntries;
+    entries = this.state.searchResultEntries || this.props.phoneBookModel.get();
 
     var renderedEntries = entries.map(function (entry) {
       return <PhoneBookEntry
         entry={entry}
         key={entry.id}
-        onRemove={this.removeEntry.bind(null,entry.id)}/>
+        onRemove={this.removeEntry.bind(null,entry.id)}
+        onEdit={this.editEntry.bind(null, entry.id)}/>
     }, this);
 
     return <div>
@@ -54,7 +55,7 @@ module.exports = React.createClass({
       return this.setState({searchResultEntries: null});
     }
 
-    props.phoneBookEntries.forEach(function (entry) {
+    props.phoneBookModel.get().forEach(function (entry) {
       if (~entry.name.toLowerCase().indexOf(query) || ~entry.number.indexOf(query)) {
         searchResults.push(entry);
       }
@@ -66,6 +67,10 @@ module.exports = React.createClass({
   },
 
   removeEntry: function (id) {
-    this.props.removeEntry(id);
+    this.props.phoneBookModel.remove(id);
+  },
+
+  editEntry: function (id, entry) {
+    this.props.phoneBookModel.update(id, entry);
   }
 });

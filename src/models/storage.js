@@ -1,3 +1,5 @@
+var _ = require('../vendor/lodash/dist/lodash');
+
 var ID_START = 1;
 
 var Storage = function () {
@@ -43,6 +45,16 @@ Storage.prototype = {
 			this._store.splice(index, 1);
 			this._sync();
 		}
+	},
+
+	update: function (id, entry) {
+		for (var i = this._store.length - 1; i >= 0; i--) {
+			if (this._store[i].id === id) {
+				this._store[i] = _.merge(this._store[i], entry);
+				this._sync();
+				return entry;
+			}
+		};
 	},
 
 	_hydrate: function () {

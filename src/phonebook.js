@@ -2,7 +2,6 @@
  * @jsx React.DOM
  */
 var React = require("./vendor/react/react-with-addons");
-var PhoneBookEntry = require("./phonebook_entry");
 var PhoneBookList = require("./phonebook_list");
 var TextInput = require("./text_input");
 var Notifier = require("./notifier");
@@ -16,6 +15,10 @@ module.exports = React.createClass({
         number: "",
       }
     }
+  },
+
+  componentDidMount: function () {
+    this.props.phoneBookModel.addChangeListener(this.forceUpdate.bind(this));
   },
 
   render: function () {
@@ -36,7 +39,7 @@ module.exports = React.createClass({
         <a href="#" className="button alert" onClick={this.removeAllEntries}>Reset</a>
       </form>
       <br/>
-      <PhoneBookList phoneBookEntries={this.props.phoneBookEntries.get()} removeEntry={this.removeEntry}/>
+      <PhoneBookList phoneBookModel={this.props.phoneBookModel}/>
     </div>
   },
 
@@ -45,13 +48,7 @@ module.exports = React.createClass({
   },
 
   removeAllEntries: function () {
-    this.props.phoneBookEntries.remove();
-    this.forceUpdate();
-  },
-
-  removeEntry: function (id) {
-    this.props.phoneBookEntries.remove(id);
-    this.forceUpdate();
+    this.props.phoneBookModel.remove();
   },
 
   addEntry: function (e) {
@@ -80,9 +77,8 @@ module.exports = React.createClass({
         timeout: true,
         message: "Entry added successfully"
       });
-      this.props.phoneBookEntries.add(entry);
+      this.props.phoneBookModel.add(entry);
     }
-
     this.forceUpdate();
   }
 });

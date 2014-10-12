@@ -7,7 +7,7 @@ module.exports = React.createClass({
   getInitialState: function () {
     return {
       isEditing: false
-    }
+    };
   },
 
   render: function () {
@@ -15,7 +15,7 @@ module.exports = React.createClass({
 
     if (this.state.isEditing) {
       name = <span>
-        <input ref="edit_name" defaultValue={this.props.entry.name}/>
+        <input ref="editName" defaultValue={this.props.entry.name}/>
         <a href="#" onClick={this.saveEdit}> Save</a>
       </span>
     } else {
@@ -35,15 +35,17 @@ module.exports = React.createClass({
   },
 
   saveEdit: function () {
-    this.props.entry.name = this.refs.edit_name.getDOMNode().value;
-    this.setState({
-      isEditing: false
+    var name = this.refs.editName.getDOMNode().value;
+    this.props.onEdit({
+      name: name,
+      number: this.props.entry.number
     });
+    this.state.isEditing = false;
+    this.forceUpdate();
   },
 
   edit: function () {
-    this.setState({
-      isEditing: !this.state.isEditing
-    });
+    this.state.isEditing = !this.state.isEditing
+    this.forceUpdate();
   }
 });

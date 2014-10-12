@@ -3,20 +3,20 @@
  */
 var React = require("./vendor/react/react-with-addons");
 var PhoneBook = require("./phonebook");
-var Storage = require('./storage');
+var PhoneBookModel = require('./models/phonebook_model');
 
-var phoneBookEntries = new Storage();
+var phoneBookModel = new PhoneBookModel();
 
 hydrateForDemo();
 
 React.renderComponent(
-  <PhoneBook phoneBookEntries={phoneBookEntries}/>,
+  <PhoneBook phoneBookModel={phoneBookModel}/>,
   document.body
 );
 
 function hydrateForDemo() {
-	if (phoneBookEntries.get().length === 0) {
-		phoneBookEntries.add([{
+	if (phoneBookModel.get().length === 0) {
+		phoneBookModel.add([{
 				name: "Dave",
 				number: "415 599 2671"
 			},
